@@ -1,0 +1,73 @@
+---
+title: "Post-replication citation curves for Replicability, Robustness, and Reproducibility paper"
+description: |
+  This script takes data from the project "Post-replication citation patterns in psychology" (Hardwicke et al., 2021) and plots a custom citation curve graph for the "Replicability, Robustness, and Reproducibility in Psychological Science" (Nosek et al.) paper
+author:
+  - name: Tom Hardwicke 
+    affiliation: Univeristy of Amsterdam
+date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r load_packages, warning=F}
+# load packages
+library(knitr) # for literate programming
+library(papaja) # for apa theme
+library(tidyverse) # for data munging
+library(here) # for finding files
+library(ggpubr) # for arranging plots
+```
+
+```{r load_data}
+# loads the processed data files
+load(here('data','d_citations.rds'))
+load(here('data','d_reference.rds'))
+load(here('data','d_contentAnalysis.rds'))
+```
+
+```{r load_functions}
+# load custom functions
+source(here('analysis','functions.R'))
+```
+
+```{r add_standardized_citation_counts}
+# identify the five different case studies we are looking at
+caseNames <- c('baumeister', 'strack')
+replicationYears <- c(2016, 2016)
+
+# set up some colour palettes
+purple <- '#481567FF'
+teal <- '#33638DFF'
+green <- '#20A387FF'
+ruby <- '#d14c6f'
+tan <- '#fcb785'
+  
+p1 <- c('lightgrey','darkgrey',purple,teal,green)
+p2 <- c('lightgrey',ruby,tan)
+
+# summarizes data at the year level for each case and adds standardized citation counts for target citations and reference class citations
+d_summary <- data.frame() # create empty list to hold data frames for each case
+for(i in seq(1,2)){ # loop through cases
+  d <- standardizeCitations(
+    thisCase = caseNames[i],
+    citationData = d_citations %>% filter(case == caseNames[i]), 
+    referenceData = d_reference %>% filter(case == caseNames[i]),
+    contentData = d_contentAnalysis %>% filter(case == caseNames[i]),
+    replicationYear = replicationYears[i])
+  d_summary <- bind_rows(d_summary, d) # append to dataframe
+}
+```
+
+```{r citationCurves, fig.width=12, fig.height=8, fig.path='figs/'}
+ggarrange(citationCurve('strack', thisTitle = 'Strack et al. (1988)', standardized = T, plotReference = T, areaPlot = "classification"),
+          citationCurve('baumeister', thisTitle = 'Baumeister et al. (1998)', standardized = T, plotReference = T, areaPlot = "classification"),
+          nrow = 2, ncol = 1, common.legend = T)
+```
+
+
+
+
