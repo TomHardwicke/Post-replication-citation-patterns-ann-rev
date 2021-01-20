@@ -65,7 +65,10 @@ for(i in seq(1,2)){ # loop through cases
 ```{r citationCurves, fig.width=12, fig.height=8, fig.path='figs/'}
 ggarrange(citationCurve('strack', thisTitle = 'Strack et al. (1988)', standardized = T, plotReference = T, areaPlot = "classification"),
           citationCurve('baumeister', thisTitle = 'Baumeister et al. (1998)', standardized = T, plotReference = T, areaPlot = "classification"),
-          nrow = 2, ncol = 1, common.legend = T)
+          nrow = 2, ncol = 1, common.legend = T) %>%
+    annotate_figure(
+    left = text_grob("Standardized citation count", rot = 90, size = 20),
+    bottom = text_grob("Publication year", size = 20))
 ```
 
 
