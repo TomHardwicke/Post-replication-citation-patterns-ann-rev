@@ -1,7 +1,7 @@
 ---
 title: "Post-replication citation curves for Replicability, Robustness, and Reproducibility paper"
 description: |
-  This script takes data from the project "Post-replication citation patterns in psychology" (Hardwicke et al., 2021) and plots a custom citation curve graph for the "Replicability, Robustness, and Reproducibility in Psychological Science" (Nosek et al.) paper
+  This script takes data from the project "Post-replication citation patterns in psychology" (Hardwicke et al., 2021) and writes reproducible text and a citation curve graph for the "Replicability, Robustness, and Reproducibility in Psychological Science" (Nosek et al.) paper.
 author:
   - name: Tom Hardwicke 
     affiliation: Univeristy of Amsterdam
@@ -60,7 +60,19 @@ for(i in seq(1,2)){ # loop through cases
     replicationYear = replicationYears[i])
   d_summary <- bind_rows(d_summary, d) # append to dataframe
 }
+
+# summarise counter-argument data
+ca_fav <- d_contentAnalysis %>% 
+  filter(citesReplication == T) %>% 
+  filter(citationClassificationAgreed == 'favourable') %>%
+  group_by(case, counterArguments, .drop = F) %>%
+  summarise(n = n()) %>%
+  mutate(percent = round(n/sum(n)*100,0)) %>%
+  select(-n)
 ```
+
+
+Scientists’ response to replications may also be reflected in how original studies are cited. One examination of post-replication citation patterns in psychology suggests that even clearly contradictory replication results may only have a modest impact on how original studies are appraised in subsequent academic literature (Figure 1; Hardwicke et al., 2021). In the case of ego depletion, there was a small increase in favorable citations (`r d_summary %>% filter(case == 'baumeister' & pubYear == '2015') %>% mutate(value = round(favourable_prop*100,0)) %>% pull(value)`% to `r d_summary %>% filter(case == 'baumeister' & pubYear == 'post-replication') %>% mutate(value = round(favourable_prop*100,0)) %>% pull(value)`%) to Baumeister and colleagues (1998) and a small increase in unfavourable citations (`r d_summary %>% filter(case == 'baumeister' & pubYear == '2015') %>% mutate(value = round(unfavourable_prop*100,0)) %>% pull(value)`% to `r d_summary %>% filter(case == 'baumeister' & pubYear == 'post-replication') %>% mutate(value = round(unfavourable_prop*100,0)) %>% pull(value)`%) from pre-replication (2015) to post-replication (2017-2019). In the case of Strack and colleagues (1988), another classic finding with a prominent failure to replicate (Wagenmakers et al., 2016), there was a decrease in favourable citations (`r d_summary %>% filter(case == 'strack' & pubYear == '2015') %>% mutate(value = round(favourable_prop*100,0)) %>% pull(value)`% to `r d_summary %>% filter(case == 'strack' & pubYear == 'post-replication') %>% mutate(value = round(favourable_prop*100,0)) %>% pull(value)`%) and a small increase in unfavourable citations (`r d_summary %>% filter(case == 'strack' & pubYear == '2015') %>% mutate(value = round(unfavourable_prop*100,0)) %>% pull(value)`% to `r d_summary %>% filter(case == 'strack' & pubYear == 'post-replication') %>% mutate(value = round(unfavourable_prop*100,0)) %>% pull(value)`%). These suggest modest corrective effects and imply considerable perpetuation of belief in the credibility of the original findings despite the contradictory replication results. Even clearly contradictory replication results do not necessarily undermine the credibility of an original finding (Collins, 1992; Earp & Trafimow, 2015; Maxwell et al., 2015); however, one might expect relevant counterevidence to be acknowledged and addressed with explicit argumentation. However, Hardwicke et al. observed substantial citation bias: only `r d_summary %>% filter(case == 'strack' & pubYear == 'post-replication') %>% mutate(value = round(citesRep_yes_prop*100,0)) %>% pull(value)`% of post-replication articles citing Strack and colleagues (1988) and `r d_summary %>% filter(case == 'baumeister' & pubYear == 'post-replication') %>% mutate(value = round(citesRep_yes_prop*100,0)) %>% pull(value)`% of those citing Baumeister and colleagues (1998) also cited the respective large-scale replication. Of those articles that cited the original study favorably and cited the replication, a principled defence of the original study appeared in `r ca_fav %>% filter(case == 'strack', counterArguments == TRUE) %>% pull(percent)`% and `r ca_fav %>% filter(case == 'baumeister', counterArguments == TRUE) %>% pull(percent)`% of articles respectively. Thus, in these case studies, there is neglect of relevant replication evidence in post-replication citation patterns.
 
 ```{r citationCurves, fig.width=12, fig.height=8, fig.path='figs/'}
 ggarrange(citationCurve('strack', thisTitle = 'Strack et al. (1988)', standardized = T, plotReference = T, areaPlot = "classification"),
@@ -70,6 +82,9 @@ ggarrange(citationCurve('strack', thisTitle = 'Strack et al. (1988)', standardiz
     left = text_grob("Standardized citation count", rot = 90, size = 20),
     bottom = text_grob("Publication year", size = 20))
 ```
+
+
+
 
 
 
