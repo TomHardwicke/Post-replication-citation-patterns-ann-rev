@@ -440,7 +440,7 @@ citationCurve <- function(
     basePlot <- basePlot +
       geom_area(
         alpha = .5,
-        aes(fill = var, colour = var),
+        aes(fill = var),
         data = d %>%
           filter(
             pubYear %in% c(replicationYear + .5, seq(replicationYear + 1, max(pubYear))),
@@ -456,7 +456,7 @@ citationCurve <- function(
       ) +
       geom_area(
         alpha = .5,
-        aes(fill = var, colour = var),
+        aes(fill = var),
         data = d %>%
           filter(
             pubYear %in% c(replicationYear - 1, replicationYear - .5),
@@ -475,7 +475,7 @@ citationCurve <- function(
     # include legend for top row plots only
     if (thisCase %in% c("baumeister", "strack")) { # if standardizing then all cases can use same y axis
       basePlot <- basePlot +
-        scale_fill_manual(name = "", values = p1)
+        scale_fill_manual(name = "Citation valence: ", values = p1)
     } else {
       basePlot <- basePlot +
         scale_fill_manual(name = "", values = p1, guide = F)
