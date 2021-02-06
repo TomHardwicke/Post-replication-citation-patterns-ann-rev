@@ -40,14 +40,16 @@ caseNames <- c('baumeister', 'strack')
 replicationYears <- c(2016, 2016)
 
 # set up some colour palettes
-purple <- '#481567FF'
-teal <- '#33638DFF'
-green <- '#20A387FF'
-ruby <- '#d14c6f'
-tan <- '#fcb785'
-  
-p1 <- c('lightgrey','darkgrey',purple,teal,green)
-p2 <- c('lightgrey',ruby,tan)
+teal <- "#00798c"
+blue <- "dodgerblue4"
+red <- "#CC6677"
+yellow <- "#DDCC77"
+lightgrey <- "grey75"
+darkgrey <- "grey35"
+beige <- "#D55E00"
+
+p1 <- c(lightgrey, darkgrey, red, yellow, teal)
+p2 <- c(lightgrey, beige, blue)
 
 # summarizes data at the year level for each case and adds standardized citation counts for target citations and reference class citations
 d_summary <- data.frame() # create empty list to hold data frames for each case
